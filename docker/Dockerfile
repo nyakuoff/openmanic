@@ -244,12 +244,12 @@ RUN \
 COPY /requirements.txt /tmp/requirements.txt
 
 
-# Install Unmanic python dependencies.
+# Install Openmanic python dependencies.
 RUN \
     echo "**** Configure APT ****" \
         && export DEBIAN_FRONTEND=noninteractive \
     && \
-    echo "**** Install Unmanic application dependencies ****" \
+    echo "**** Install Openmanic application dependencies ****" \
         && sleep 2 \
         && \
         echo "**** Update sources ****" \
@@ -305,19 +305,19 @@ RUN \
 ENV HOME_DIR="/config"
 
 
-# Install pre-built Unmanic wheel
+# Install pre-built Openmanic wheel
 # Must first run `python3 ./setup.py bdist_wheel` on host to build package
 COPY /dist/ /src/
 ENV VIRTUAL_ENV=/opt/venv
 RUN \
-    echo "**** Install Unmanic ****" \
+    echo "**** Install Openmanic ****" \
         && sleep 2 \
         && \
-        echo "**** Install unmanic from pre-built wheel ****" \
+        echo "**** Install openmanic from pre-built wheel ****" \
             && ls -l /src/ \
             && "${VIRTUAL_ENV:?}"/bin/pip install --no-cache-dir /src/*.whl \
         && \
-        echo "**** Make default paths for unmanic library ****" \
+        echo "**** Make default paths for openmanic library ****" \
             && mkdir -p /library
 
 
@@ -327,5 +327,5 @@ COPY /docker/root /
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["/usr/bin/unmanic"]
 
-# Unmanic runs on port 8888
+# Openmanic runs on port 8888
 EXPOSE 8888/tcp

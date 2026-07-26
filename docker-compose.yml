@@ -1,0 +1,44 @@
+################
+# Openmanic - production Docker Compose file for Dockge (or plain `docker compose`)
+#
+# This pulls the image built and published by this repo's GitHub Actions workflow
+# (.github/workflows/integration_test_and_build_all_packages_ci.yml) to GHCR whenever
+# `master` is pushed. No local build step is required on the machine running this file.
+#
+# First-time setup on a new machine:
+#   1. Wait for the "Build All Packages CI" GitHub Action to finish on the pushed commit
+#      (https://github.com/nyakuoff/openmanic/actions) - it publishes
+#      ghcr.io/nyakuoff/openmanic:latest using the repo's own GITHUB_TOKEN, no extra
+#      secrets needed.
+#   2. If the GHCR package is private, log in once on this machine:
+#        echo <a GitHub PAT with read:packages> | docker login ghcr.io -u nyakuoff --password-stdin
+#      Or make the package public from the repo's Packages settings on GitHub.
+#   3. Edit PUID/PGID/TZ and the volume paths below, then `docker compose up -d`
+#      (or add this file as a new stack in Dockge).
+#
+# Variables that will need to be changed:
+#     <PUID>                   -  User id for folder/file permissions
+#     <PGID>                   -  Group id for folder/file permissions
+#     <TZ>                     -  Your time zone, eg - Pacific/Auckland
+#     <PATH_TO_CONFIG>         -  Path where Openmanic will store config files
+#     <PATH_TO_LIBRARY>        -  Path where you store the files that Openmanic will scan
+#     <PATH_TO_ENCODE_CACHE>   -  Cache path for in-progress encoding tasks
+#
+
+version: '2.4'
+
+services:
+  openmanic:
+    container_name: openmanic
+    image: ghcr.io/nyakuoff/openmanic:latest
+    restart: unless-stopped
+    ports:
+      - 8888:8888
+    environment:
+      - PUID=<PUID>
+      - PGID=<PGID>
+      - TZ=<TZ>
+    volumes:
+      - <PATH_TO_CONFIG>:/config
+      - <PATH_TO_LIBRARY>:/library
+      - <PATH_TO_ENCODE_CACHE>:/tmp/unmanic

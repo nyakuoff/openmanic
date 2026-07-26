@@ -1,18 +1,18 @@
 {
-  "name": "unmanic-webui",
+  "name": "openmanic-webui",
   "version": "1.0.0",
   "private": true,
-  "description": "Unmanic webui.",
+  "description": "Openmanic webui.",
   "author": "Josh.5",
   "license": "GPL-3.0",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Unmanic/unmanic.git"
+    "url": "git+https://github.com/nyakuoff/openmanic.git"
   },
   "bugs": {
-    "url": "https://github.com/Unmanic/unmanic/issues"
+    "url": "https://github.com/nyakuoff/openmanic/issues"
   },
-  "homepage": "https://unmanic.app",
+  "homepage": "https://github.com/nyakuoff/openmanic",
   "engines": {
     "node": ">=14.17.2",
     "npm": ">=6.14.13"

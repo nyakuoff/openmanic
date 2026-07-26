@@ -7,13 +7,13 @@ body:
   - type: markdown
     attributes:
       value: |
-        **THIS IS NOT THE PLACE TO ASK FOR SUPPORT!** Please use [Discord](https://unmanic.app/discord) for support issues.
+        **THIS IS NOT THE PLACE TO ASK FOR SUPPORT!** <!-- TODO(openmanic): link Openmanic's own support channel here once available. -->
 
-        **Plugin-related bug reports opened in this repo will be closed.** Please file plugin bugs against the plugin's source repository.
+        **Plugin-related bug reports opened in this repo will be closed.** Please file plugin bugs against the plugin's source repository. Openmanic uses the same, shared Unmanic plugin ecosystem.
 
         Use the correct repo for other issues:
-        - Documentation: https://github.com/Unmanic/unmanic-documentation
-        - Frontend and translations: https://github.com/Unmanic/unmanic-frontend
+        - Documentation (shared, upstream): https://github.com/Unmanic/unmanic-documentation
+        - Frontend and translations: this repo (the frontend is vendored in `unmanic/webserver/frontend`)
   - type: textarea
     id: description
     attributes:

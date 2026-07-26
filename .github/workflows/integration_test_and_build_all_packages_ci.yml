@@ -72,7 +72,7 @@ jobs:
         run: |
           sudo apt-get install -yq --no-install-recommends ffmpeg
 
-      # Install python dependencies for testing unmanic
+      # Install python dependencies for testing Openmanic
       - name: Install python dependencies
         if: success()
         run: |
@@ -94,11 +94,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Fetch full git repository and all submodules
+      # Fetch full git repository
       - name: Checkout project
         uses: actions/checkout@v4
-        with:
-          submodules: "recursive"
 
       # Checkout tags
       - name: Fetch tags
@@ -122,14 +120,14 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pip-
 
-      # Install python dependencies for building unmanic
+      # Install python dependencies for building Openmanic
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
           if [ -f requirements-dev.txt ]; then pip install -r requirements-dev.txt; fi
 
-      # Setup node environment for building unmanic's webui
+      # Setup node environment for building Openmanic's webui
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
@@ -162,7 +160,7 @@ jobs:
       # Upload python package distribution data artifact
       - uses: actions/upload-artifact@v4
         with:
-          name: unmanic-py-dist-data-${{ steps.py_build_data.outputs.py_version }}
+          name: openmanic-py-dist-data-${{ steps.py_build_data.outputs.py_version }}
           path: dist/
 
   build_docker:
@@ -222,8 +220,8 @@ jobs:
           PY_VERSION="${{ steps.py_build_data.outputs.py_version }}"
           BUILD_DATE="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
 
-          SERVICE_NAME=unmanic
-          DOCKER_HUB_IMAGE=docker.io/josh5/${SERVICE_NAME:?}
+          SERVICE_NAME=openmanic
+          DOCKER_HUB_IMAGE=docker.io/nyakuoff/${SERVICE_NAME:?}
           GHCR_IMAGE=ghcr.io/${ORG:?}/${SERVICE_NAME:?}
 
           DOCKER_TAGS=""
@@ -234,23 +232,23 @@ jobs:
             if [[ -n ${PY_VERSION} ]]; then
               DOCKER_TAGS="${DOCKER_TAGS}${DOCKER_HUB_IMAGE}:${PY_VERSION},${GHCR_IMAGE}:${PY_VERSION},"
             fi
-            if [[ ${GITHUB_EVENT_NAME} == push && ${GITHUB_REPOSITORY} == Unmanic/unmanic ]]; then
+            if [[ ${GITHUB_EVENT_NAME} == push && ${GITHUB_REPOSITORY} == nyakuoff/openmanic ]]; then
               DOCKER_PUSH="true"
             fi
           elif [[ ${GITHUB_REF} == refs/heads/staging ]]; then
             DOCKER_TAGS="${DOCKER_TAGS}${DOCKER_HUB_IMAGE}:staging,${GHCR_IMAGE}:staging,"
-            if [[ ${GITHUB_EVENT_NAME} == push && ${GITHUB_REPOSITORY} == Unmanic/unmanic ]]; then
+            if [[ ${GITHUB_EVENT_NAME} == push && ${GITHUB_REPOSITORY} == nyakuoff/openmanic ]]; then
               DOCKER_PUSH="true"
             fi
           elif [[ ${GITHUB_REF} == refs/heads/dev-* ]]; then
             DOCKER_TAGS="${DOCKER_TAGS}${DOCKER_HUB_IMAGE}:${VERSION_TAG},${GHCR_IMAGE}:${VERSION_TAG},"
-            if [[ ${GITHUB_EVENT_NAME} == push && ${GITHUB_REPOSITORY} == Unmanic/unmanic ]]; then
+            if [[ ${GITHUB_EVENT_NAME} == push && ${GITHUB_REPOSITORY} == nyakuoff/openmanic ]]; then
               DOCKER_PUSH="true"
             fi
           elif [[ ${GITHUB_REF} == refs/heads/pr-* ]]; then
             PR_NUMBER=${VERSION_TAG#pr-}
             DOCKER_TAGS="${GHCR_IMAGE}:pr-${PR_NUMBER},"
-            if [[ ${GITHUB_EVENT_NAME} == push && ${GITHUB_REPOSITORY} == Unmanic/unmanic ]]; then
+            if [[ ${GITHUB_EVENT_NAME} == push && ${GITHUB_REPOSITORY} == nyakuoff/openmanic ]]; then
               DOCKER_PUSH="true"
             fi
           elif [[ ${GITHUB_REF} == refs/tags/* ]]; then
@@ -258,7 +256,7 @@ jobs:
             if [[ ${VERSION} =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}[-\w]*$ ]]; then
               DOCKER_TAGS="${DOCKER_TAGS}${DOCKER_HUB_IMAGE}:${VERSION},${GHCR_IMAGE}:${VERSION},"
               DOCKER_TAGS="${DOCKER_TAGS}${DOCKER_HUB_IMAGE}:latest,${GHCR_IMAGE}:latest,"
-              if [[ ${GITHUB_EVENT_NAME} == push && ${GITHUB_REPOSITORY} == Unmanic/unmanic ]]; then
+              if [[ ${GITHUB_EVENT_NAME} == push && ${GITHUB_REPOSITORY} == nyakuoff/openmanic ]]; then
                 DOCKER_PUSH="true"
               fi
             fi
@@ -322,7 +320,7 @@ jobs:
           labels: |
             maintainer=Josh.5
             source.version=${{ steps.prepare.outputs.sha_short }}
-            source.project=Unmanic
+            source.project=Openmanic
             source.service=${{ steps.prepare.outputs.service_name }}
             org.opencontainers.image.title=${{ steps.prepare.outputs.service_name }}
             org.opencontainers.image.created=${{ steps.prepare.outputs.docker_build_date }}

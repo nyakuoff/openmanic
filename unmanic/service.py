@@ -324,11 +324,11 @@ class RootService:
         while not self.db_connection.is_stopped():
             time.sleep(0.5)
             continue
-        self.logger.info("Exit Unmanic")
+        self.logger.info("Exit Openmanic")
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Unmanic")
+    parser = argparse.ArgumentParser(description="Openmanic")
     parser.add_argument(
         "--version", action="version", version="%(prog)s {version}".format(version=metadata.read_version_string("long"))
     )
@@ -401,7 +401,7 @@ def main():
             time.sleep(0.2)
             continue
     else:
-        # Run the main Unmanic service
+        # Run the main Openmanic service
         service = RootService()
         service.developer = args.dev
         service.dev_api = args.dev_api

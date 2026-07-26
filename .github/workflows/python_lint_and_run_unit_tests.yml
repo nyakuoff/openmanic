@@ -36,7 +36,7 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-pip-
 
-    # Install dependencies for testing unmanic
+    # Install dependencies for testing Openmanic
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip

@@ -1,3 +1,10 @@
+> **Note (Openmanic):** this document is the original privacy policy inherited from Unmanic, written by Josh
+> Sunnex about the services *he* operates (`api.unmanic.app` and related infrastructure). Openmanic does not
+> operate `api.unmanic.app` or any of the Unmanic-hosted services described below, and the legacy
+> registration/plugin-download code paths that would talk to them are present but inert by default in
+> Openmanic. This page is kept for historical accuracy about the inherited codebase, not because it
+> describes Openmanic's own data handling.
+
 Your privacy is important. I, Josh Sunnex, am committed to being transparent and open. This Privacy Policy
 explains generally how I receive information about you, and what I do with that information once I have it.
 

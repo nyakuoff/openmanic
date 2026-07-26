@@ -2,15 +2,15 @@
 
 blank_issues_enabled: false
 contact_links:
-  - name: Discord support
-    url: https://streamingtech.co.nz/discord
-    about: Ask questions in Discord.
+  - name: Openmanic community support
+    url: https://github.com/nyakuoff/openmanic/discussions
+    about: Ask questions about Openmanic.
   - name: Documentation issues
     url: https://github.com/Unmanic/unmanic-documentation/issues
-    about: Report documentation issues in the documentation repo.
+    about: Report documentation issues in the (shared, upstream) Unmanic documentation repo.
   - name: Plugin issues
     url: https://github.com/Unmanic/unmanic-plugins/issues
-    about: New plugin requests only (Plugin bugs should be opened against the plugin's source repo).
+    about: New plugin requests only (Plugin bugs should be opened against the plugin's source repo). Openmanic uses the same, shared Unmanic plugin ecosystem.
   - name: Frontend and translations issues
-    url: https://github.com/Unmanic/unmanic-frontend/issues
-    about: Report frontend and translations issues in the frontend repo.
+    url: https://github.com/nyakuoff/openmanic/issues
+    about: Openmanic's frontend is vendored in this repo.

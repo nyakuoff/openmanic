@@ -1,7 +1,7 @@
 ################
 # SSL/TLS enabled Docker Compose file for testing
 #
-# This compose file runs Unmanic with HTTPS enabled using local test certificates.
+# This compose file runs Openmanic with HTTPS enabled using local test certificates.
 #
 # Usage from project root:
 #   docker-compose -f docker/docker-compose-ssl.yml up
@@ -10,9 +10,9 @@
 version: '2'
 
 services:
-  unmanic-ssl-test:
-    container_name: unmanic-ssl-test
-    image: unmanic-ssl:test
+  openmanic-ssl-test:
+    container_name: openmanic-ssl-test
+    image: openmanic-ssl:test
     ports:
       - 8888:8888
     environment:
@@ -22,7 +22,7 @@ services:
       - ssl_enabled=true
       - ssl_certfilepath=/etc/ssl/unmanic/cert.pem
       - ssl_keyfilepath=/etc/ssl/unmanic/key.pem
-      # Standard Unmanic Configuration
+      # Standard Openmanic Configuration
       - DEBUGGING=true
       - TZ=America/Edmonton
     volumes:

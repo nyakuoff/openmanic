@@ -3,15 +3,17 @@
 #
 # This compose file is only good for automated testing.
 #
-# docker compose -f ./docker/docker-compose-test.yml exec --workdir=/app unmanic-testenv pytest --log-cli-level=INFO
+# docker compose -f ./docker/docker-compose-test.yml exec --workdir=/app openmanic-testenv pytest --log-cli-level=INFO
 #
 
 version: "2"
 
 services:
-  unmanic-testenv:
-    container_name: unmanic-testenv
-    image: josh5/unmanic:latest
+  openmanic-testenv:
+    container_name: openmanic-testenv
+    # TODO(openmanic): no published Openmanic image yet; build one locally first with
+    #   docker build -f docker/Dockerfile -t openmanic/openmanic:latest .
+    image: openmanic/openmanic:latest
     ports:
       - 8888:8888
     # user: "1000:1000"

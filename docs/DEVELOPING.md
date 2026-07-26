@@ -1,4 +1,4 @@
-# Unmanic development
+# Openmanic development
 
 The development environment can be configured in 2 ways:
 
@@ -9,7 +9,7 @@ The development environment can be configured in 2 ways:
 
 Depending on what you are trying to develop, one way may work better than the other.
 
-Regardless of the method you use, you will need to pull in the frontend component and build it.
+Regardless of the method you use, you will need to build the frontend component.
 
 
 
@@ -81,15 +81,9 @@ unmanic --version
 
 ## Building the Frontend
 
-The Unmanic frontend UI exists in a submodule.
+The Openmanic frontend UI is vendored directly in `unmanic/webserver/frontend`.
 
-Start by pulling the latest changes
-
-```
-git submodule update --init --recursive 
-```
-
-Once you have done this, run the frontend_install.sh script.
+Run the frontend_install.sh script.
 
 ```
 devops/frontend_install.sh
@@ -107,7 +101,7 @@ Use a clean profile config prefix and enable profiling with `--profiling`.
 ./devops/run_docker.sh --force-recreate --config-prefix=profiling --profiling
 ```
 
-Wait for the container logs to show Unmanic is running before opening the UI:
+Wait for the container logs to show Openmanic is running before opening the UI:
 
 ```
 ./devops/run_docker.sh logs --tail 200
@@ -128,7 +122,7 @@ PY
 
 ### Profiling (Chrome DevTools)
 
-Open Unmanic in Chrome at `http://localhost:8888`, then open DevTools:
+Open Openmanic in Chrome at `http://localhost:8888`, then open DevTools:
 
 1. Performance tab: record 10-30 seconds while idle.
 2. Network tab: check for repeated polling/websocket traffic.

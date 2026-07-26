@@ -304,7 +304,7 @@ class UIServer(threading.Thread):
             app,
             config_path=os.path.join(os.path.dirname(__file__), "..", "webserver", "docs", "api_schema_v2.json"),
             url_prefix="/unmanic/swagger",
-            title="Unmanic application API"
+            title="Openmanic application API"
         )
 
         return app

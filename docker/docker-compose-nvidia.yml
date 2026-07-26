@@ -1,5 +1,5 @@
 ################
-# Unmanic Docker Compose template
+# Openmanic Docker Compose template
 #
 # Use this template when enabling NVENC Hardware accelerated encoding
 #
@@ -9,8 +9,8 @@
 #     <TZ>                              -  Your time zone, eg - Pacific/Auckland
 #     <NVIDIA_VISIBLE_DEVICES>          -  The GPUs that will be accessible to the container
 #                                          Options: https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/user-guide.html#gpu-enumeration
-#     <PATH_TO_CONFIG>                  -  Path where Unmanic will store config files
-#     <PATH_TO_LIBRARY>                 -  Path where you store the files that Unmanic will scan
+#     <PATH_TO_CONFIG>                  -  Path where Openmanic will store config files
+#     <PATH_TO_LIBRARY>                 -  Path where you store the files that Openmanic will scan
 #     <PATH_TO_ENCODE_CACHE>            -  Cache path for in-progress encoding tasks
 #
 
@@ -18,9 +18,11 @@
 version: '2.4'
 
 services:
-  unmanic:
-    container_name: unmanic
-    image: josh5/unmanic:latest
+  openmanic:
+    container_name: openmanic
+    # TODO(openmanic): no published Openmanic image yet; build one locally first with
+    #   docker build -f docker/Dockerfile -t openmanic/openmanic:latest .
+    image: openmanic/openmanic:latest
     ports:
       - 8888:8888
     environment:

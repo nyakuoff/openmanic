@@ -47,7 +47,6 @@ from unmanic.libs.frontend_push_messages import FrontendPushMessages
 from unmanic.libs.library import Library
 from unmanic.libs.logs import UnmanicLogging
 from unmanic.libs.plugins import PluginsHandler
-from unmanic.libs.session import Session
 from unmanic.libs.singleton import SingletonType
 from unmanic.libs.task import TaskDataStore
 
@@ -828,38 +827,12 @@ class Links(object, metaclass=SingletonType):
 
     def within_enabled_link_limits(self):
         """
-        Ensure enabled plugins are within limits
+        No supporter-tier limits are enforced locally; always within limits.
 
         :return:
         """
         frontend_messages = FrontendPushMessages()
-        # Fetch level from session
-        s = Session()
-        s.register_unmanic()
-        if s.level > 1:
-            return True
-
-        # Fetch all linked remote installations
-        remote_installations = self.settings.get_remote_installations()
-
-        def add_frontend_message():
-            # If the frontend messages queue was included in request, append a message
-            if frontend_messages:
-                frontend_messages.add(
-                    {
-                        'id':      'linkedInstallationLimits',
-                        'type':    'error',
-                        'code':    'linkedInstallationLimits',
-                        'message': '',
-                        'timeout': 0
-                    }
-                )
-
-        # Ensure remote installations are within limits
-        # Function was returned above if the user was logged in and able to use infinite
-        if len(remote_installations) > s.link_count:
-            add_frontend_message()
-            return False
+        frontend_messages.remove_item('linkedInstallationLimits')
         return True
 
     def new_pending_task_create_on_remote_installation(self, remote_config: dict, abspath: str, library_id: int):

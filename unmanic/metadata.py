@@ -59,8 +59,8 @@ __description__ = "A simple tool for optimising your video library to a single f
 __disclaimer__ = ""
 __forum__ = ""
 __video__ = ""
-__website__ = "https://github.com/Josh5/unmanic"
-__description__ = "A simple tool for optimising your video library to a single format"
+__website__ = "https://github.com/nyakuoff/openmanic"
+__description__ = "Openmanic (a fork of Unmanic) - a simple tool for optimising your video library to a single format"
 __copyright__ = """
     Copyright:
            Copyright (C) Josh Sunnex - All Rights Reserved

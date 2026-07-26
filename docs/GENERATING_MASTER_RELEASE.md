@@ -6,7 +6,7 @@ If you are just going to release what is currently in the master branch, then sk
 
 ## Step 1: Compare commit history
 Compare the `staging` and `master` branch commit history:
-https://github.com/Unmanic/unmanic/compare/master...staging
+https://github.com/nyakuoff/openmanic/compare/master...staging
 
 
 ## Step 2: Rebase merge into master
@@ -18,7 +18,7 @@ Perform a rebase merge from `staging` into `master` on the checked out repo. Pus
 
 ## Step 3: Compare commit history since last release
 Compare the `master` branch commit history since the last release:
-https://github.com/Unmanic/unmanic/compare/0.2.7...master
+https://github.com/nyakuoff/openmanic/compare/0.2.7...master
 
 While here, draft a changelog for the next release.
 

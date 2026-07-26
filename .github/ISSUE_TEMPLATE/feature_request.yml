@@ -8,11 +8,11 @@ body:
       value: |
         Thanks for taking the time to help improve!
 
-        **Plugin-related feature requests opened in this repo will be closed.** Please file plugin requests at https://github.com/Unmanic/unmanic-plugins
+        **Plugin-related feature requests opened in this repo will be closed.** Please file plugin requests at https://github.com/Unmanic/unmanic-plugins (Openmanic uses the same, shared Unmanic plugin ecosystem)
 
         Use the correct repo for other requests:
-        - Documentation: https://github.com/Unmanic/unmanic-documentation
-        - Frontend and translations: https://github.com/Unmanic/unmanic-frontend
+        - Documentation (shared, upstream): https://github.com/Unmanic/unmanic-documentation
+        - Frontend and translations: this repo (the frontend is vendored in `unmanic/webserver/frontend`)
   - type: textarea
     id: problem
     attributes:
