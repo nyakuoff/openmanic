@@ -142,8 +142,14 @@ RUN \
 
 # Install commonly used command line tools
 ARG JELLYFIN_FFMPEG_VERSION="7"
-ARG BTBN_FFMPEG_RELEASE="autobuild-2026-03-19-13-03"
-ARG BTBN_FFMPEG_VERSION="8.0"
+# BtbN only keeps a rolling window of dated "autobuild-*" releases and prunes old
+# ones, so pinning to a specific dated tag here will eventually 404. Use their
+# "latest" rolling tag instead so this doesn't need to be bumped again; check
+# https://github.com/BtbN/FFmpeg-Builds/releases/tag/latest for the current
+# BTBN_FFMPEG_VERSION (the "n<version>" in the linux64/linuxarm64-gpl asset names)
+# if this ever needs updating.
+ARG BTBN_FFMPEG_RELEASE="latest"
+ARG BTBN_FFMPEG_VERSION="8.1"
 ARG NODE_MAJOR="22"
 RUN \
     echo "**** Configure APT ****" \
