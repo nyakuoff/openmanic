@@ -120,4 +120,3 @@ Please refer to the source of these libraries for more information on their resp
 See [CONTRIBUTING.md](docs/CONTRIBUTING.md) to learn how to contribute to Openmanic.
 
 ---
- 
