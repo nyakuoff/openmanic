@@ -1,7 +1,7 @@
 Openmanic - Library Optimiser  
 ===========================
 
-![OPENMANIC - Library Optimiser](./logo.png)
+![OPENMANIC - Library Optimiser](./logo-white_font.png)
 
 Openmanic is a fork of [Unmanic](https://github.com/Josh5/unmanic) by Josh Sunnex, with all locally-enforced supporter-tier restrictions removed so every feature implemented in this repository works for everyone. It is not created, endorsed, or supported by the original Unmanic maintainers. See [Migrating from Unmanic](#migrating-from-unmanic) below.
 
