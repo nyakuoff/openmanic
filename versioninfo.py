@@ -163,8 +163,16 @@ def get_git_version_info():
 
     :return:
     """
-    # Fetch the last tag
-    last_tag = subprocess.check_output(["git", "describe", "--tags", "--abbrev=0"]).strip().decode("utf-8")
+    # Fetch the last tag (falls back to a base version if this repository has no tags,
+    # eg. a freshly created fork that has not yet cut a release)
+    try:
+        last_tag = subprocess.check_output(
+            ["git", "describe", "--tags", "--abbrev=0"], stderr=subprocess.DEVNULL
+        ).strip().decode("utf-8")
+        distance_ref = last_tag
+    except subprocess.CalledProcessError:
+        last_tag = "0.0.0"
+        distance_ref = None
     # Fetch the current commit ID
     current_commit = subprocess.check_output(["git", "rev-parse", "--verify", "--short", "HEAD"]).strip().decode("utf-8")
 
@@ -172,10 +180,16 @@ def get_git_version_info():
     short_version_string = last_tag
     long_version_string = last_tag
 
-    # Fetch the amount of commits since the last tag
-    distance_since_last_tag = subprocess.check_output(
-        ["git", "rev-list", last_tag + "..HEAD", "--count"]
-    ).strip().decode("utf-8")
+    # Fetch the amount of commits since the last tag (or, if there is no tag, the
+    # total commit count so the version string still reflects repository history)
+    if distance_ref:
+        distance_since_last_tag = subprocess.check_output(
+            ["git", "rev-list", distance_ref + "..HEAD", "--count"]
+        ).strip().decode("utf-8")
+    else:
+        distance_since_last_tag = subprocess.check_output(
+            ["git", "rev-list", "HEAD", "--count"]
+        ).strip().decode("utf-8")
 
     # Normalize short version string (saves getting spammed with useless warnings from setuptools about it)
     if '-alpha' in short_version_string.lower():
