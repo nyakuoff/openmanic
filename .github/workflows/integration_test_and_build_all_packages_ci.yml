@@ -211,6 +211,8 @@ jobs:
       - name: Prepare
         if: success()
         id: prepare
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKER_USERNAME }}
         run: |
           echo "GITHUB_REF:${GITHUB_REF}"
           echo "GITHUB_REPOSITORY:${GITHUB_REPOSITORY}"
@@ -221,27 +223,43 @@ jobs:
           BUILD_DATE="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
 
           SERVICE_NAME=openmanic
-          DOCKER_HUB_IMAGE=docker.io/nyakuoff/${SERVICE_NAME:?}
           GHCR_IMAGE=ghcr.io/${ORG:?}/${SERVICE_NAME:?}
+
+          # Docker Hub publishing is opt-in: only attempt it if DOCKER_USERNAME/
+          # DOCKER_PASSWORD secrets are actually configured on this repo. GHCR
+          # publishing always works via the built-in GITHUB_TOKEN, no setup needed.
+          DOCKER_HUB_ENABLED="false"
+          DOCKER_HUB_IMAGE=""
+          if [[ -n "${DOCKERHUB_USERNAME}" ]]; then
+            DOCKER_HUB_ENABLED="true"
+            DOCKER_HUB_IMAGE=docker.io/nyakuoff/${SERVICE_NAME:?}
+          fi
+
+          add_tag() {
+            DOCKER_TAGS="${DOCKER_TAGS}${GHCR_IMAGE}:$1,"
+            if [[ ${DOCKER_HUB_ENABLED} == true ]]; then
+              DOCKER_TAGS="${DOCKER_TAGS}${DOCKER_HUB_IMAGE}:$1,"
+            fi
+          }
 
           DOCKER_TAGS=""
           DOCKER_PUSH="false"
 
           if [[ ${GITHUB_REF} == refs/heads/master ]]; then
-            DOCKER_TAGS="${DOCKER_TAGS}${DOCKER_HUB_IMAGE}:latest,${GHCR_IMAGE}:latest,"
+            add_tag latest
             if [[ -n ${PY_VERSION} ]]; then
-              DOCKER_TAGS="${DOCKER_TAGS}${DOCKER_HUB_IMAGE}:${PY_VERSION},${GHCR_IMAGE}:${PY_VERSION},"
+              add_tag "${PY_VERSION}"
             fi
             if [[ ${GITHUB_EVENT_NAME} == push && ${GITHUB_REPOSITORY} == nyakuoff/openmanic ]]; then
               DOCKER_PUSH="true"
             fi
           elif [[ ${GITHUB_REF} == refs/heads/staging ]]; then
-            DOCKER_TAGS="${DOCKER_TAGS}${DOCKER_HUB_IMAGE}:staging,${GHCR_IMAGE}:staging,"
+            add_tag staging
             if [[ ${GITHUB_EVENT_NAME} == push && ${GITHUB_REPOSITORY} == nyakuoff/openmanic ]]; then
               DOCKER_PUSH="true"
             fi
           elif [[ ${GITHUB_REF} == refs/heads/dev-* ]]; then
-            DOCKER_TAGS="${DOCKER_TAGS}${DOCKER_HUB_IMAGE}:${VERSION_TAG},${GHCR_IMAGE}:${VERSION_TAG},"
+            add_tag "${VERSION_TAG}"
             if [[ ${GITHUB_EVENT_NAME} == push && ${GITHUB_REPOSITORY} == nyakuoff/openmanic ]]; then
               DOCKER_PUSH="true"
             fi
@@ -254,8 +272,8 @@ jobs:
           elif [[ ${GITHUB_REF} == refs/tags/* ]]; then
             VERSION=${GITHUB_REF#refs/tags/}
             if [[ ${VERSION} =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}[-\w]*$ ]]; then
-              DOCKER_TAGS="${DOCKER_TAGS}${DOCKER_HUB_IMAGE}:${VERSION},${GHCR_IMAGE}:${VERSION},"
-              DOCKER_TAGS="${DOCKER_TAGS}${DOCKER_HUB_IMAGE}:latest,${GHCR_IMAGE}:latest,"
+              add_tag "${VERSION}"
+              add_tag latest
               if [[ ${GITHUB_EVENT_NAME} == push && ${GITHUB_REPOSITORY} == nyakuoff/openmanic ]]; then
                 DOCKER_PUSH="true"
               fi
@@ -266,8 +284,15 @@ jobs:
             DOCKER_TAGS="${SERVICE_NAME}:pr-${PR_NUMBER},"
           fi
 
-          echo "docker_hub_image:${DOCKER_HUB_IMAGE:?}"
-          echo "docker_hub_image=${DOCKER_HUB_IMAGE:?}" >> $GITHUB_OUTPUT
+          # docker_image feeds docker/metadata-action for label generation only;
+          # use GHCR since it's always available, falling back to Docker Hub if enabled.
+          DOCKER_IMAGE="${GHCR_IMAGE}"
+          if [[ ${DOCKER_HUB_ENABLED} == true ]]; then
+            DOCKER_IMAGE="${DOCKER_HUB_IMAGE}"
+          fi
+
+          echo "docker_hub_enabled:${DOCKER_HUB_ENABLED}"
+          echo "docker_hub_enabled=${DOCKER_HUB_ENABLED}" >> $GITHUB_OUTPUT
 
           echo "ghcr_image:${GHCR_IMAGE:?}"
           echo "ghcr_image=${GHCR_IMAGE:?}" >> $GITHUB_OUTPUT
@@ -278,8 +303,8 @@ jobs:
           echo "service_name:${SERVICE_NAME:?}"
           echo "service_name=${SERVICE_NAME:?}" >> $GITHUB_OUTPUT
 
-          echo "docker_image:${DOCKER_HUB_IMAGE:?}"
-          echo "docker_image=${DOCKER_HUB_IMAGE:?}" >> $GITHUB_OUTPUT
+          echo "docker_image:${DOCKER_IMAGE:?}"
+          echo "docker_image=${DOCKER_IMAGE:?}" >> $GITHUB_OUTPUT
 
           echo "docker_tags:$(echo ${DOCKER_TAGS} | sed 's/,$//')"
           echo "docker_tags=$(echo ${DOCKER_TAGS} | sed 's/,$//')" >> $GITHUB_OUTPUT
@@ -287,7 +312,7 @@ jobs:
           echo "docker_push:${DOCKER_PUSH:?}"
           echo "docker_push=${DOCKER_PUSH:?}" >> $GITHUB_OUTPUT
 
-          echo "docker_build_date:${BUILD_DATE:?}" 
+          echo "docker_build_date:${BUILD_DATE:?}"
           echo "docker_build_date=${BUILD_DATE:?}" >> $GITHUB_OUTPUT
 
           echo "docker_platforms=linux/amd64,linux/arm64" >> $GITHUB_OUTPUT
@@ -303,7 +328,7 @@ jobs:
 
       # ---
       - name: Log into Docker Hub registry
-        if: success() && steps.prepare.outputs.docker_push == 'true' && contains(steps.prepare.outputs.docker_tags, 'docker.io/')
+        if: success() && steps.prepare.outputs.docker_push == 'true' && steps.prepare.outputs.docker_hub_enabled == 'true'
         uses: docker/login-action@9780b0c442fbb1117ed29e0efdff1e18412f7567 #v3.3.0
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
@@ -369,8 +394,13 @@ jobs:
           ls -l ./dist/
 
       # Push the artifacts to PyPI repo
+      # Disabled by default: the package is still named "unmanic" (kept for import/
+      # compatibility - see unmanic/metadata.py) and that PyPI project belongs to the
+      # original Unmanic maintainer, not this fork. Publishing to it would be
+      # publishing under someone else's package name. Re-enable only after this repo
+      # has its own PyPI project (eg. renamed to "openmanic") to publish to.
       - name: Publish distribution package to PyPI
-        if: github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/')
-        uses: pypa/gh-action-pypi-publish@master
+        if: false
+        uses: pypa/gh-action-pypi-publish@release/v1
         with:
           password: ${{ secrets.PYPI_TOKEN }}
