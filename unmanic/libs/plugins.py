@@ -29,7 +29,6 @@
            OR OTHER DEALINGS IN THE SOFTWARE.
 
 """
-import base64
 import hashlib
 import json
 import os
@@ -132,30 +131,24 @@ class PluginsHandler(object, metaclass=SingletonType):
 
         return True
 
+    # The repo.json files served by plugin repos (including the official one) are
+    # plain public, static JSON - fetching them does not require any Unmanic
+    # account/supporter infrastructure, so we fetch them directly here rather than
+    # proxying the request through api.unmanic.app.
+    DEFAULT_REPO_URL = "https://raw.githubusercontent.com/Unmanic/unmanic-plugins/repo/repo.json"
+
     def fetch_remote_repo_data(self, repo_path):
-        # Fetch remote JSON file
-        session = Session()
-        uuid = session.get_installation_uuid()
-        level = session.get_supporter_level()
-        repo = base64.b64encode(repo_path.encode('utf-8')).decode('utf-8')
-        api_path = f'plugin_repos/repo_data/uuid/{uuid}/level/{level}/repo/{repo}'
-        data, status_code = session.api_get(
-            'unmanic-api',
-            2,
-            api_path,
-        )
-        if status_code == 401:
-            # Something is wrong with registration. Let's resend it and try again.
-            self.logger.debug(f"Plugin repo returned a request to register. Code:{status_code}")
-            session.register_unmanic()
-            data, status_code = session.api_get(
-                'unmanic-api',
-                2,
-                api_path,
-            )
-        if status_code >= 500:
-            self.logger.debug(f"Failed to fetch plugin repo from '{api_path}'. Code:{status_code}")
-        return data
+        # Fetch remote JSON file directly from the repo's own URL
+        repo_url = self.DEFAULT_REPO_URL if repo_path == self.get_default_repo() else repo_path
+        try:
+            response = requests.get(repo_url, timeout=30)
+            response.raise_for_status()
+            return response.json()
+        except requests.RequestException as e:
+            self.logger.debug("Failed to fetch plugin repo from '%s'. %s", repo_url, str(e))
+        except ValueError as e:
+            self.logger.debug("Plugin repo at '%s' did not return valid JSON. %s", repo_url, str(e))
+        return {}
 
     def update_plugin_repos(self):
         """
